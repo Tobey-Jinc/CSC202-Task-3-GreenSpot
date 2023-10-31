@@ -6,7 +6,7 @@ import java.util.UUID
 import java.util.Date
 
 @Entity
-data class Crime(
+data class Plant(
     @PrimaryKey val id: UUID,
     val title: String,
     val date: Date,

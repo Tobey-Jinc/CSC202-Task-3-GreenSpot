@@ -3,7 +3,7 @@ package com.tobeygronow.android.greenspot.database
 import androidx.room.TypeConverter
 import java.util.Date
 
-class CrimeTypeConverters {
+class PlantTypeConverters {
     @TypeConverter
     fun fromDate(date: Date): Long {
         return date.time

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="crime_title_hint">
-        Introduzca un título significativo y memorable para el crimen.
+    <string name="plant_title_hint">
+        Introduzca un título significativo y memorable para el plantn.
     </string>
 </resources>

@@ -2,7 +2,7 @@ package com.tobeygronow.android.greenspot
 
 import android.content.Context
 import androidx.room.Room
-import com.tobeygronow.android.greenspot.database.CrimeDatabase
+import com.tobeygronow.android.greenspot.database.PlantDatabase
 import com.tobeygronow.android.greenspot.database.migration_1_2
 import com.tobeygronow.android.greenspot.database.migration_2_3
 import kotlinx.coroutines.CoroutineScope
@@ -11,45 +11,45 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-private const val DATABASE_NAME = "crime-database"
+private const val DATABASE_NAME = "plant-database"
 
-class CrimeRepository private constructor(
+class PlantRepository private constructor(
     context: Context,
     private val coroutineScope: CoroutineScope = GlobalScope
 ) {
-    private val database: CrimeDatabase = Room
+    private val database: PlantDatabase = Room
         .databaseBuilder(
             context.applicationContext,
-            CrimeDatabase::class.java,
+            PlantDatabase::class.java,
             DATABASE_NAME
         )
         .addMigrations(migration_1_2, migration_2_3)
         .build()
 
-    fun getCrimes(): Flow<List<Crime>> = database.crimeDao().getCrimes()
+    fun getPlants(): Flow<List<Plant>> = database.plantDao().getPlants()
 
-    suspend fun getCrime(id: UUID): Crime = database.crimeDao().getCrime(id)
+    suspend fun getPlant(id: UUID): Plant = database.plantDao().getPlant(id)
 
-    fun updateCrime(crime: Crime) {
+    fun updatePlant(plant: Plant) {
         coroutineScope.launch {
-            database.crimeDao().updateCrime(crime)
+            database.plantDao().updatePlant(plant)
         }
     }
 
-    suspend fun addCrime(crime: Crime) {
-        database.crimeDao().addCrime(crime)
+    suspend fun addPlant(plant: Plant) {
+        database.plantDao().addPlant(plant)
     }
 
     companion object {
-        private var INSTANCE: CrimeRepository? = null
+        private var INSTANCE: PlantRepository? = null
         fun initialize(context: Context) {
             if (INSTANCE == null) {
-                INSTANCE = CrimeRepository(context)
+                INSTANCE = PlantRepository(context)
             }
         }
-        fun get(): CrimeRepository {
+        fun get(): PlantRepository {
             return INSTANCE ?:
-            throw IllegalStateException("CrimeRepository must be initialized")
+            throw IllegalStateException("PlantRepository must be initialized")
         }
     }
 }

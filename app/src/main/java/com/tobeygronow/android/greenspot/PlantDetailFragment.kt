@@ -18,7 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.tobeygronow.android.greenspot.databinding.FragmentCrimeDetailBinding
+import com.tobeygronow.android.greenspot.databinding.FragmentPlantDetailBinding
 import kotlinx.coroutines.launch
 import android.text.format.DateFormat
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,18 +29,18 @@ import java.util.Date
 
 private const val DATE_FORMAT = "EEE, MMM, dd"
 
-class CrimeDetailFragment : Fragment() {
+class PlantDetailFragment : Fragment() {
 
-    private var _binding: FragmentCrimeDetailBinding? = null
+    private var _binding: FragmentPlantDetailBinding? = null
     private val binding 
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    private val args: CrimeDetailFragmentArgs by navArgs()
+    private val args: PlantDetailFragmentArgs by navArgs()
 
-    private val crimeDetailViewModel: CrimeDetailViewModel by viewModels {
-        CrimeDetailViewModelFactory(args.crimeId)
+    private val plantDetailViewModel: PlantDetailViewModel by viewModels {
+        PlantDetailViewModelFactory(args.plantId)
     }
 
     private val selectSuspect = registerForActivityResult(
@@ -53,8 +53,8 @@ class CrimeDetailFragment : Fragment() {
         ActivityResultContracts.TakePicture()
     ) { didTakePhoto: Boolean ->
         if (didTakePhoto && photoName != null) {
-            crimeDetailViewModel.updateCrime { oldCrime ->
-                oldCrime.copy(photoFileName = photoName)
+            plantDetailViewModel.updatePlant { oldPlant ->
+                oldPlant.copy(photoFileName = photoName)
             }
         }
     }
@@ -67,7 +67,7 @@ class CrimeDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = 
-            FragmentCrimeDetailBinding.inflate(inflater, container, false)
+            FragmentPlantDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -75,19 +75,19 @@ class CrimeDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            crimeTitle.doOnTextChanged { text, _, _, _ ->
-                crimeDetailViewModel.updateCrime { oldCrime ->
-                    oldCrime.copy(title = text.toString())
+            plantTitle.doOnTextChanged { text, _, _, _ ->
+                plantDetailViewModel.updatePlant { oldPlant ->
+                    oldPlant.copy(title = text.toString())
                 }
             }
 
-            crimeSolved.setOnCheckedChangeListener { _, isChecked ->
-                crimeDetailViewModel.updateCrime { oldCrime ->
-                    oldCrime.copy(isSolved = isChecked)
+            plantSolved.setOnCheckedChangeListener { _, isChecked ->
+                plantDetailViewModel.updatePlant { oldPlant ->
+                    oldPlant.copy(isSolved = isChecked)
                 }
             }
 
-            crimeSuspect.setOnClickListener {
+            plantSuspect.setOnClickListener {
                 selectSuspect.launch(null)
             }
 
@@ -95,15 +95,15 @@ class CrimeDetailFragment : Fragment() {
                 requireContext(),
                 null
             )
-            crimeSuspect.isEnabled = canResolveIntent(selectSuspectIntent)
+            plantSuspect.isEnabled = canResolveIntent(selectSuspectIntent)
 
-            crimeCamera.setOnClickListener {
+            plantCamera.setOnClickListener {
                 photoName = "IMG_${Date()}.JPG"
                 val photoFile = File(requireContext().applicationContext.filesDir,
                     photoName)
                 val photoUri = FileProvider.getUriForFile(
                     requireContext(),
-                    "com.bignerdranch.android.criminalintent.fileprovider",
+                    "com.tobeygronow.android.greenspot.fileprovider",
                     photoFile
                 )
                 takePhoto.launch(photoUri)
@@ -113,14 +113,14 @@ class CrimeDetailFragment : Fragment() {
                 requireContext(),
                 null
             )
-            crimeCamera.isEnabled = canResolveIntent(captureImageIntent)
+            plantCamera.isEnabled = canResolveIntent(captureImageIntent)
 
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                crimeDetailViewModel.crime.collect { crime ->
-                    crime?.let { updateUi(it) }
+                plantDetailViewModel.plant.collect { plant ->
+                    plant?.let { updateUi(it) }
                 }
             }
         }
@@ -130,7 +130,7 @@ class CrimeDetailFragment : Fragment() {
         ) { _, bundle ->
             val newDate =
                 bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
-            crimeDetailViewModel.updateCrime { it.copy(date = newDate) }
+            plantDetailViewModel.updatePlant { it.copy(date = newDate) }
         }
     }
 
@@ -139,28 +139,28 @@ class CrimeDetailFragment : Fragment() {
         _binding = null
     }
 
-    private fun updateUi(crime: Crime) {
+    private fun updateUi(plant: Plant) {
         binding.apply {
-            if (crimeTitle.text.toString() != crime.title) {
-                crimeTitle.setText(crime.title)
+            if (plantTitle.text.toString() != plant.title) {
+                plantTitle.setText(plant.title)
             }
-            crimeDate.text = crime.date.toString()
+            plantDate.text = plant.date.toString()
 
-            crimeDate.setOnClickListener {
+            plantDate.setOnClickListener {
                 findNavController().navigate (
-                    CrimeDetailFragmentDirections.selectDate(crime.date)
+                    PlantDetailFragmentDirections.selectDate(plant.date)
                 )
             }
 
-            crimeSolved.isChecked = crime.isSolved
+            plantSolved.isChecked = plant.isSolved
 
-            crimeReport.setOnClickListener {
+            plantReport.setOnClickListener {
                 val reportIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, getCrimeReport(crime))
+                    putExtra(Intent.EXTRA_TEXT, getPlantReport(plant))
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        getString(R.string.crime_report_subject)
+                        getString(R.string.plant_report_subject)
                     )
                 }
                 val chooserIntent = Intent.createChooser(
@@ -170,29 +170,29 @@ class CrimeDetailFragment : Fragment() {
                 startActivity(chooserIntent)
             }
 
-            crimeSuspect.text = crime.suspect.ifEmpty {
-                getString(R.string.crime_suspect_text)
+            plantSuspect.text = plant.suspect.ifEmpty {
+                getString(R.string.plant_suspect_text)
             }
 
-            updatePhoto(crime.photoFileName)
+            updatePhoto(plant.photoFileName)
         }
     }
 
-    private fun getCrimeReport(crime: Crime): String {
-        val solvedString = if (crime.isSolved) {
-            getString(R.string.crime_report_solved)
+    private fun getPlantReport(plant: Plant): String {
+        val solvedString = if (plant.isSolved) {
+            getString(R.string.plant_report_solved)
         } else {
-            getString(R.string.crime_report_unsolved)
+            getString(R.string.plant_report_unsolved)
         }
-        val dateString = DateFormat.format(DATE_FORMAT, crime.date).toString()
-        val suspectText = if (crime.suspect.isBlank()) {
-            getString(R.string.crime_report_no_suspect)
+        val dateString = DateFormat.format(DATE_FORMAT, plant.date).toString()
+        val suspectText = if (plant.suspect.isBlank()) {
+            getString(R.string.plant_report_no_suspect)
         } else {
-            getString(R.string.crime_report_suspect, crime.suspect)
+            getString(R.string.plant_report_suspect, plant.suspect)
         }
         return getString(
-            R.string.crime_report,
-            crime.title, dateString, solvedString, suspectText
+            R.string.plant_report,
+            plant.title, dateString, solvedString, suspectText
         )
     }
 
@@ -203,8 +203,8 @@ class CrimeDetailFragment : Fragment() {
         queryCursor?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val suspect = cursor.getString(0)
-                crimeDetailViewModel.updateCrime { oldCrime ->
-                    oldCrime.copy(suspect = suspect)
+                plantDetailViewModel.updatePlant { oldPlant ->
+                    oldPlant.copy(suspect = suspect)
                 }
             }
         }
@@ -221,28 +221,28 @@ class CrimeDetailFragment : Fragment() {
     }
 
     private fun updatePhoto(photoFileName: String?) {
-        if (binding.crimePhoto.tag != photoFileName) {
+        if (binding.plantPhoto.tag != photoFileName) {
             val photoFile = photoFileName?.let {
                 File(requireContext().applicationContext.filesDir, it)
             }
             if (photoFile?.exists() == true) {
-                binding.crimePhoto.doOnLayout { measuredView ->
+                binding.plantPhoto.doOnLayout { measuredView ->
                     val scaledBitmap = getScaledBitmap(
                         photoFile.path,
                         measuredView.width,
                         measuredView.height
                     )
-                    binding.crimePhoto.setImageBitmap(scaledBitmap)
-                    binding.crimePhoto.tag = photoFileName
-                    binding.crimePhoto.contentDescription =
-                        getString(R.string.crime_photo_image_description)
+                    binding.plantPhoto.setImageBitmap(scaledBitmap)
+                    binding.plantPhoto.tag = photoFileName
+                    binding.plantPhoto.contentDescription =
+                        getString(R.string.plant_photo_image_description)
 
                 }
             } else {
-                binding.crimePhoto.setImageBitmap(null)
-                binding.crimePhoto.tag = null
-                binding.crimePhoto.contentDescription =
-                    getString(R.string.crime_photo_no_image_description)
+                binding.plantPhoto.setImageBitmap(null)
+                binding.plantPhoto.tag = null
+                binding.plantPhoto.contentDescription =
+                    getString(R.string.plant_photo_no_image_description)
             }
         }
     }
