@@ -87,8 +87,10 @@ class PlantListFragment : Fragment() {
             val newPlant = Plant(
                 id = UUID.randomUUID(),
                 title = "",
+                place = "",
                 date = Date(),
-                isSolved = false
+                longitude = 0.0,
+                latitude = 0.0
             )
             plantListViewModel.addPlant(newPlant)
             findNavController().navigate(

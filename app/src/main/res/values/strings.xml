@@ -2,24 +2,18 @@
     <string name="app_name">GreenSpot</string>
     <string name="plant_title_hint">Enter a title for the plant.</string>
     <string name="plant_title_label">Title</string>
+    <string name="plant_place_hint">Enter the place you found it.</string>
+    <string name="plant_place_label">Place</string>
     <string name="plant_details_label">Details</string>
-    <string name="plant_solved_label">Solved</string>
     <string name="plant_photo_button_description">Take photo of plant scene</string>
     <string name="plant_photo_no_image_description">
         Plant scene photo (not set)
     </string>
-    <string name="plant_photo_image_description">Plant scene photo (set)</string>
-    <string name="new_plant">New Plant</string>
-    <string name="plant_suspect_text">Choose Suspect</string>
-    <string name="plant_report_text">Send Plant Report</string>
-    <string name="plant_report">
-        %1$s! The plant was discovered on %2$s. %3$s, and %4$s
-    </string>
-    <string name="plant_report_solved">The case is solved</string>
-    <string name="plant_report_unsolved">The case is not solved</string>
-    <string name="plant_report_no_suspect">there is no suspect.</string>
-    <string name="plant_report_suspect">the suspect is %s.</string>
-    <string name="plant_report_subject">GreenSpot Plant Report</string>
-    <string name="send_report">Send plant report via</string>
+    <string name="plant_photo_image_description">Plant photo</string>
+    <string name="new_plant">New</string>
+    <string name="help">Help</string>
+    <string name="plant_gps_location">Set GPS Location</string>
+    <string name="plant_view_in_google_maps">View in Google Maps</string>
+    <string name="plant_share">Share</string>
 
 </resources>

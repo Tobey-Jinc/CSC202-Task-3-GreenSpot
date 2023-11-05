@@ -9,8 +9,9 @@ import java.util.Date
 data class Plant(
     @PrimaryKey val id: UUID,
     val title: String,
+    val place: String,
     val date: Date,
-    val isSolved: Boolean,
-    val suspect: String = "",
+    val longitude: Double,
+    val latitude: Double,
     val photoFileName: String? = null
 )

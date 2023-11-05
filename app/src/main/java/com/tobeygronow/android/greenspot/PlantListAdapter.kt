@@ -17,15 +17,17 @@ class PlantHolder(
         val df = DateFormat.getDateInstance(DateFormat.LONG)
         binding.plantDate.text = df.format(plant.date)
 
+        binding.plantPlace.text = plant.place
+
         binding.root.setOnClickListener {
             onPlantClicked(plant.id)
         }
 
-        binding.plantSolved.visibility = if (plant.isSolved) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+//        binding.plantSolved.visibility = if (plant.isSolved) {
+//            View.VISIBLE
+//        } else {
+//            View.GONE
+//        }
     }
 }
 

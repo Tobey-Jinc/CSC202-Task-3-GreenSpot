@@ -3,8 +3,6 @@ package com.tobeygronow.android.greenspot
 import android.content.Context
 import androidx.room.Room
 import com.tobeygronow.android.greenspot.database.PlantDatabase
-import com.tobeygronow.android.greenspot.database.migration_1_2
-import com.tobeygronow.android.greenspot.database.migration_2_3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +21,6 @@ class PlantRepository private constructor(
             PlantDatabase::class.java,
             DATABASE_NAME
         )
-        .addMigrations(migration_1_2, migration_2_3)
         .build()
 
     fun getPlants(): Flow<List<Plant>> = database.plantDao().getPlants()
