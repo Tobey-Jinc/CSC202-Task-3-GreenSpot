@@ -96,7 +96,10 @@
         android:id="@+id/plant_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Longitude: 0, Latitude: 0" />
+        android:text="Longitude: 0, Latitude: 0"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/plant_set_location"

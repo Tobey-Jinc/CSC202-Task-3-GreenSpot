@@ -34,6 +34,7 @@ import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import java.io.File
+import java.text.DateFormat
 import java.util.Date
 
 private const val DATE_FORMAT = "EEE, MMM, dd"
@@ -110,7 +111,6 @@ class PlantDetailFragment : Fragment() {
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    Log.d("GPS", "Try to get location")
                     if (GoogleApiAvailability.getInstance()
                             .isGooglePlayServicesAvailable(requireContext()) == ConnectionResult.SUCCESS
                     ) {
@@ -127,9 +127,7 @@ class PlantDetailFragment : Fragment() {
                                 plantDetailViewModel.updatePlant { oldPlant ->
                                     oldPlant.copy(longitude = location.longitude, latitude = location.latitude)
                                 }
-                                plantLocation.text = "Longitude: ${location.longitude}, Latitude: ${location.latitude}"
                             }
-                            Log.d("GPS", "Got location: $location")
                         }
                     }
                 }
@@ -210,7 +208,8 @@ class PlantDetailFragment : Fragment() {
                 plantPlace.setText(plant.place)
             }
 
-            plantDate.text = plant.date.toString()
+            val df = DateFormat.getDateInstance(DateFormat.LONG)
+            plantDate.text = df.format(plant.date)
 
             plantDate.setOnClickListener {
                 findNavController().navigate (
@@ -219,67 +218,62 @@ class PlantDetailFragment : Fragment() {
             }
 
             if (plant.longitude == null || plant.latitude == null) {
-                plantLocation.text = "No location set!"
+                plantLocation.text = getString(R.string.plant_null_coordinates)
                 googleMaps.isEnabled = false
                 googleMaps.isClickable = false
             }
             else {
-                plantLocation.text = "Longitude: ${plant.longitude}, Latitude: ${plant.latitude}"
+                plantLocation.text = getString(R.string.plant_coordinates, plant.latitude, plant.longitude)
                 googleMaps.isEnabled = true
                 googleMaps.isClickable = true
             }
 
-//            plantReport.setOnClickListener {
-//                val reportIntent = Intent(Intent.ACTION_SEND).apply {
-//                    type = "text/plain"
-//                    putExtra(Intent.EXTRA_TEXT, getPlantReport(plant))
-//                    putExtra(
-//                        Intent.EXTRA_SUBJECT,
-//                        getString(R.string.plant_report_subject)
-//                    )
-//                }
-//                val chooserIntent = Intent.createChooser(
-//                    reportIntent,
-//                    getString(R.string.send_report)
-//                )
-//                startActivity(chooserIntent)
-//            }
+            plantShare.setOnClickListener {
+                val reportIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, getPlantReport(plant))
+                    putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.plant_share_subject)
+                    )
+                }
+                val chooserIntent = Intent.createChooser(
+                    reportIntent,
+                    getString(R.string.plant_share_send)
+                )
+                startActivity(chooserIntent)
+            }
 
             updatePhoto(plant.photoFileName)
         }
     }
 
     private fun getPlantReport(plant: Plant): String {
-//        val solvedString = if (plant.isSolved) {
-//            getString(R.string.plant_report_solved)
-//        } else {
-//            getString(R.string.plant_report_unsolved)
-//        }
-//        val dateString = DateFormat.format(DATE_FORMAT, plant.date).toString()
-//        val suspectText = if (plant.suspect.isBlank()) {
-//            getString(R.string.plant_report_no_suspect)
-//        } else {
-//            getString(R.string.plant_report_suspect, plant.suspect)
-//        }
-        return ""
-//        return getString(
-//            R.string.plant_report,
-//            plant.title, dateString, solvedString, suspectText
-//        )
-    }
+        val titleString = if (plant.title.isNotEmpty()) {
+            getString(R.string.plant_share_title, plant.title)
+        } else {
+            getString(R.string.plant_share_no_title)
+        }
 
-    private fun parseContactSelection(contactUri: Uri) {
-//        val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
-//        val queryCursor = requireActivity().contentResolver
-//            .query(contactUri, queryFields, null, null, null)
-//        queryCursor?.use { cursor ->
-//            if (cursor.moveToFirst()) {
-//                val suspect = cursor.getString(0)
-//                plantDetailViewModel.updatePlant { oldPlant ->
-//                    oldPlant.copy(suspect = suspect)
-//                }
-//            }
-//        }
+        val placeString = if (plant.place.isNotEmpty()) {
+            getString(R.string.plant_share_place, plant.place)
+        } else {
+            getString(R.string.plant_share_no_place)
+        }
+
+        val df = DateFormat.getDateInstance(DateFormat.LONG)
+        val dateString = getString(R.string.plant_share_date, df.format(plant.date))
+
+        val coordinatesString = if (plant.latitude != null && plant.longitude != null) {
+            getString(R.string.plant_share_coordinates, plant.latitude, plant.longitude)
+        } else {
+            getString(R.string.plant_share_no_coordinates)
+        }
+
+        return getString(
+            R.string.plant_share_template,
+            titleString, placeString, dateString, coordinatesString
+        )
     }
 
     private fun canResolveIntent(intent: Intent): Boolean {

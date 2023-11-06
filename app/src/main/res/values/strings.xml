@@ -10,12 +10,27 @@
         Plant scene photo (not set)
     </string>
     <string name="plant_photo_image_description">Plant photo</string>
+
     <string name="new_plant">New</string>
     <string name="help">Help</string>
+
+    <string name="plant_coordinates">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="plant_null_coordinates">No location set!</string>
     <string name="plant_gps_location">Set GPS Location</string>
     <string name="plant_view_in_google_maps">View in Google Maps</string>
-    <string name="plant_share">Share</string>
     <string name="google_maps_key">AIzaSyAX_cCMeV59rRmTzrb96w2CzlZwRaswgxw</string>
     <string name="title_activity_maps">Plant Locator</string>
+
+    <string name="plant_share">Share</string>
+    <string name="plant_share_template">%1$s %2$s %3$s %4$s</string>
+    <string name="plant_share_title">The plant is called %s.</string>
+    <string name="plant_share_no_title">The plant has not yet been named.</string>
+    <string name="plant_share_place">It was found at %s.</string>
+    <string name="plant_share_no_place">The plants location is unknown.</string>
+    <string name="plant_share_date">The plant was found on %s.</string>
+    <string name="plant_share_coordinates">The plants coordinates are %f, %f.</string>
+    <string name="plant_share_no_coordinates">The plants coordinates were not recorded.</string>
+    <string name="plant_share_subject">GreenSpot Plant</string>
+    <string name="plant_share_send">Send the plant via</string>
 
 </resources>
