@@ -33,4 +33,6 @@
     <string name="plant_share_subject">GreenSpot Plant</string>
     <string name="plant_share_send">Send the plant via</string>
 
+    <string name="plant_delete">Delete</string>
+
 </resources>

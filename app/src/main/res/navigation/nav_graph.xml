@@ -13,6 +13,9 @@
         <action
             android:id="@+id/show_plant_detail"
             app:destination="@id/plantDetailFragment" />
+        <action
+            android:id="@+id/show_help"
+            app:destination="@id/helpActivity" />
     </fragment>
     <fragment
         android:id="@+id/plantDetailFragment"
@@ -24,6 +27,13 @@
         <action
             android:id="@+id/select_date"
             app:destination="@id/datePickerFragment" />
+        <argument
+            android:name="justCreated"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <action
+            android:id="@+id/show_plant_list"
+            app:destination="@id/plantListFragment" />
     </fragment>
     <dialog
         android:id="@+id/datePickerFragment"
@@ -33,4 +43,8 @@
             android:name="plantDate"
             app:argType="java.util.Date" />
     </dialog>
+    <activity
+        android:id="@+id/helpActivity"
+        android:name="com.tobeygronow.android.greenspot.HelpActivity"
+        android:label="HelpActivity" />
 </navigation>

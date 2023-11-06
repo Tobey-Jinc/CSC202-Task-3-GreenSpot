@@ -37,6 +37,10 @@ class PlantRepository private constructor(
         database.plantDao().addPlant(plant)
     }
 
+    suspend fun removePlant(plant: Plant) {
+        database.plantDao().removePlant(plant)
+    }
+
     companion object {
         private var INSTANCE: PlantRepository? = null
         fun initialize(context: Context) {

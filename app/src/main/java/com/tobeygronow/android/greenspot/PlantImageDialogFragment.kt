@@ -1,7 +1,5 @@
 package com.tobeygronow.android.greenspot
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +17,7 @@ class PlantImageDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.zoomed_image_dialog_fragment, container, false)
+        val view = inflater.inflate(R.layout.dialog_fragment_zoomed_image, container, false)
         val imageView = view.findViewById(R.id.zoomed_image_view) as ImageView
 
         val photoFileName = arguments?.getSerializable("PHOTO_URI") as String

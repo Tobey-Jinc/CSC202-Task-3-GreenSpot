@@ -118,4 +118,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/plant_share" />
+
+    <Button
+        android:id="@+id/plant_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
 </LinearLayout>

@@ -79,6 +79,12 @@ class PlantListFragment : Fragment() {
                 showNewPlant()
                 true
             }
+            R.id.help -> {
+                findNavController().navigate(
+                    PlantListFragmentDirections.showHelp()
+                )
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -92,7 +98,7 @@ class PlantListFragment : Fragment() {
             )
             plantListViewModel.addPlant(newPlant)
             findNavController().navigate(
-                PlantListFragmentDirections.showPlantDetail(newPlant.id)
+                PlantListFragmentDirections.showPlantDetail(newPlant.id).setJustCreated(true)
             )
         }
     }

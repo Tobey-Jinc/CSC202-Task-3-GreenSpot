@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
+import androidx.navigation.NavOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -172,6 +173,20 @@ class PlantDetailFragment : Fragment() {
             )
             plantCamera.isEnabled = canResolveIntent(captureImageIntent)
 
+            if (args.justCreated) {
+                plantDelete.visibility = View.GONE
+            }
+            else {
+                plantDelete.setOnClickListener {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        plant?.let { PlantRepository.get().removePlant(it) }
+
+                        // Navigate back to list view, and prevent navigation back to this detail view
+                        // Credit: https://stackoverflow.com/a/67281386
+                        findNavController().navigate(R.id.nav_graph,null,NavOptions.Builder().setPopUpTo(findNavController().graph.startDestinationId, true).build())
+                    }
+                }
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
