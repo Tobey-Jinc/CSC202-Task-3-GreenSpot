@@ -31,9 +31,6 @@
             android:name="justCreated"
             app:argType="boolean"
             android:defaultValue="false" />
-        <action
-            android:id="@+id/show_plant_list"
-            app:destination="@id/plantListFragment" />
     </fragment>
     <dialog
         android:id="@+id/datePickerFragment"

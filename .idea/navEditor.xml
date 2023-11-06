@@ -20,7 +20,7 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="helpActivity2">
+                  <entry key="helpActivity">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
@@ -69,7 +69,7 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_plantListFragment_to_helpActivity2">
+                            <entry key="show_help">
                               <value>
                                 <LayoutPositions />
                               </value>

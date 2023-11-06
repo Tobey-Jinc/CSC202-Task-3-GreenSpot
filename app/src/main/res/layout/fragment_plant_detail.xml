@@ -123,5 +123,6 @@
         android:id="@+id/plant_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:backgroundTint="#DC2020"
+        android:text="@string/plant_delete" />
 </LinearLayout>
