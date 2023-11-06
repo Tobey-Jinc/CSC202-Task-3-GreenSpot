@@ -86,7 +86,7 @@ class PlantListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val newPlant = Plant(
                 id = UUID.randomUUID(),
-                title = "",
+                title = "New Plant",
                 place = "",
                 date = Date()
             )

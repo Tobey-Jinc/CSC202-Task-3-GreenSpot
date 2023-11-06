@@ -1,14 +1,11 @@
 package com.tobeygronow.android.greenspot
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +20,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.tobeygronow.android.greenspot.databinding.FragmentPlantDetailBinding
 import kotlinx.coroutines.launch
-import android.text.format.DateFormat
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -39,7 +35,6 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import java.io.File
 import java.util.Date
-import kotlin.math.log
 
 private const val DATE_FORMAT = "EEE, MMM, dd"
 
@@ -163,6 +158,14 @@ class PlantDetailFragment : Fragment() {
                     photoFile
                 )
                 takePhoto.launch(photoUri)
+            }
+
+            plantPhoto.setOnClickListener {
+                plant!!.photoFileName?.let { dialog ->
+                    PlantImageDialogFragment.newInstance(
+                        dialog
+                    )
+                }?.show(childFragmentManager, null)
             }
 
             val captureImageIntent = takePhoto.contract.createIntent(
