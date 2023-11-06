@@ -15,5 +15,7 @@
     <string name="plant_gps_location">Set GPS Location</string>
     <string name="plant_view_in_google_maps">View in Google Maps</string>
     <string name="plant_share">Share</string>
+    <string name="google_maps_key">AIzaSyAX_cCMeV59rRmTzrb96w2CzlZwRaswgxw</string>
+    <string name="title_activity_maps">MapsActivity</string>
 
 </resources>

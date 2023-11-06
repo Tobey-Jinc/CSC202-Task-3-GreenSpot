@@ -71,6 +71,8 @@ class PlantDetailFragment : Fragment() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    private var plant: Plant? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -87,7 +89,6 @@ class PlantDetailFragment : Fragment() {
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -135,18 +136,21 @@ class PlantDetailFragment : Fragment() {
                             }
                             Log.d("GPS", "Got location: $location")
                         }
-
-                        fusedLocationProviderClient.lastLocation
-                            .addOnSuccessListener { location: Location? ->
-                                location?.let {
-                                    plantDetailViewModel.updatePlant { oldPlant ->
-                                        oldPlant.copy(longitude = location.longitude, latitude = location.latitude)
-                                    }
-                                    plantLocation.text = "Longitude: ${location.longitude}, Latitude: ${location.latitude}"
-                                }
-                            }
                     }
                 }
+                else {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        0)
+                }
+            }
+
+            googleMaps.setOnClickListener {
+                val intent = Intent(requireContext(), MapsActivity::class.java)
+                intent.putExtra("title", plant!!.title)
+                intent.putExtra("longitude", plant!!.longitude)
+                intent.putExtra("latitude", plant!!.latitude)
+                startActivity(intent)
             }
 
             plantCamera.setOnClickListener {
@@ -192,12 +196,16 @@ class PlantDetailFragment : Fragment() {
     }
 
     private fun updateUi(plant: Plant) {
+        this.plant = plant
+
         binding.apply {
             if (plantTitle.text.toString() != plant.title) {
                 plantTitle.setText(plant.title)
             }
 
-            plantPlace.setText(plant.place)
+            if (plantPlace.text.toString() != plant.place) {
+                plantPlace.setText(plant.place)
+            }
 
             plantDate.text = plant.date.toString()
 
@@ -207,7 +215,16 @@ class PlantDetailFragment : Fragment() {
                 )
             }
 
-            plantLocation.text = "Longitude: ${plant.longitude}, Latitude: ${plant.latitude}"
+            if (plant.longitude == null || plant.latitude == null) {
+                plantLocation.text = "No location set!"
+                googleMaps.isEnabled = false
+                googleMaps.isClickable = false
+            }
+            else {
+                plantLocation.text = "Longitude: ${plant.longitude}, Latitude: ${plant.latitude}"
+                googleMaps.isEnabled = true
+                googleMaps.isClickable = true
+            }
 
 //            plantReport.setOnClickListener {
 //                val reportIntent = Intent(Intent.ACTION_SEND).apply {

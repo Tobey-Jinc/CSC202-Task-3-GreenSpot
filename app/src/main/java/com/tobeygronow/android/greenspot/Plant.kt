@@ -11,7 +11,7 @@ data class Plant(
     val title: String,
     val place: String,
     val date: Date,
-    val longitude: Double,
-    val latitude: Double,
+    val longitude: Double? = null,
+    val latitude: Double? = null,
     val photoFileName: String? = null
 )
