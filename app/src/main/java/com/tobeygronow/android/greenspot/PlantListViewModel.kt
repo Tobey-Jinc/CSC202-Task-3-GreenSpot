@@ -16,7 +16,6 @@ class PlantListViewModel : ViewModel() {
     val plants: StateFlow<List<Plant>>
         get() = _plants.asStateFlow()
 
-
     init {
         viewModelScope.launch {
             plantRepository.getPlants().collect {

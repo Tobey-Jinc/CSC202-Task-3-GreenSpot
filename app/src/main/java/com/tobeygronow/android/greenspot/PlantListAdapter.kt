@@ -22,12 +22,6 @@ class PlantHolder(
         binding.root.setOnClickListener {
             onPlantClicked(plant.id)
         }
-
-//        binding.plantSolved.visibility = if (plant.isSolved) {
-//            View.VISIBLE
-//        } else {
-//            View.GONE
-//        }
     }
 }
 
