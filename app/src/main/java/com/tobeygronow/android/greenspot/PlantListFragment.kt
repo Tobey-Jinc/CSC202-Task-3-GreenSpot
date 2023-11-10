@@ -21,6 +21,9 @@ import java.util.UUID
 
 private const val TAG = "PlantListFragment"
 
+/**
+ * Helps with handling navigation in the List UI
+ */
 class PlantListFragment : Fragment() {
     private var _binding: FragmentPlantListBinding? = null
     private val binding
@@ -47,6 +50,9 @@ class PlantListFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Navigate to the Item UI
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -73,13 +79,18 @@ class PlantListFragment : Fragment() {
         inflater.inflate(R.menu.fragment_plant_list, menu)
     }
 
+    /**
+     * Define functionality of menu buttons
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.new_plant -> {
+                // Create and show a new plant
                 showNewPlant()
                 true
             }
             R.id.help -> {
+                // Navigate to the help view (website)
                 findNavController().navigate(
                     PlantListFragmentDirections.showHelp()
                 )
@@ -88,6 +99,10 @@ class PlantListFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    /**
+     * Creates a new plant and then navigates to the Item UI so it can be edited
+     */
     private fun showNewPlant() {
         viewLifecycleOwner.lifecycleScope.launch {
             val newPlant = Plant(
@@ -98,6 +113,7 @@ class PlantListFragment : Fragment() {
             )
             plantListViewModel.addPlant(newPlant)
             findNavController().navigate(
+                // Do navigation and specify that this Plant was just created so the Delete button won't be displayed
                 PlantListFragmentDirections.showPlantDetail(newPlant.id).setJustCreated(true)
             )
         }

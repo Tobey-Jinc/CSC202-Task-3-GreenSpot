@@ -40,6 +40,9 @@ import java.util.Date
 
 private const val DATE_FORMAT = "EEE, MMM, dd"
 
+/**
+ * Displays a Plants details, and allows them to be edited
+ */
 class PlantDetailFragment : Fragment() {
 
     private var _binding: FragmentPlantDetailBinding? = null
@@ -54,6 +57,7 @@ class PlantDetailFragment : Fragment() {
         PlantDetailViewModelFactory(args.plantId)
     }
 
+    // Update the Plants photo
     private val takePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { didTakePhoto: Boolean ->
@@ -73,6 +77,7 @@ class PlantDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Used to access the users location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
@@ -89,20 +94,25 @@ class PlantDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Define events
         binding.apply {
+            // Set Plant title
             plantTitle.doOnTextChanged { text, _, _, _ ->
                 plantDetailViewModel.updatePlant { oldPlant ->
                     oldPlant.copy(title = text.toString())
                 }
             }
 
+            // Set Plant place
             plantPlace.doOnTextChanged { text, _, _, _ ->
                 plantDetailViewModel.updatePlant { oldPlant ->
                     oldPlant.copy(place = text.toString())
                 }
             }
 
+            // Set Plant latitude and longitude
             plantSetLocation.setOnClickListener {
+                // Check if required permissions are available
                 if (ActivityCompat.checkSelfPermission(
                     requireContext(),
                     android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -111,7 +121,7 @@ class PlantDetailFragment : Fragment() {
                         requireContext(),
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
-                ) {
+                ) { // Permission available, try to get location
                     if (GoogleApiAvailability.getInstance()
                             .isGooglePlayServicesAvailable(requireContext()) == ConnectionResult.SUCCESS
                     ) {
@@ -124,6 +134,7 @@ class PlantDetailFragment : Fragment() {
                                 override fun isCancellationRequested() = false
                             }
                         ).addOnSuccessListener { location: Location? ->
+                            // Update the Plants latitude and longitude
                             location?.let {
                                 plantDetailViewModel.updatePlant { oldPlant ->
                                     oldPlant.copy(longitude = location.longitude, latitude = location.latitude)
@@ -132,14 +143,16 @@ class PlantDetailFragment : Fragment() {
                         }
                     }
                 }
-                else {
+                else { // Permissions not available... Ask for permission
                     ActivityCompat.requestPermissions(requireActivity(),
                         arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                         0)
                 }
             }
 
+            // Display the Plants location with Google Maps
             googleMaps.setOnClickListener {
+                // Start activity and send the Plants name, latitude and longitude with intent extras
                 val intent = Intent(requireContext(), MapsActivity::class.java)
                 intent.putExtra("title", plant!!.title)
                 intent.putExtra("longitude", plant!!.longitude)
@@ -147,6 +160,7 @@ class PlantDetailFragment : Fragment() {
                 startActivity(intent)
             }
 
+            // Take a photo
             plantCamera.setOnClickListener {
                 photoName = "IMG_${Date()}.JPG"
                 val photoFile = File(requireContext().applicationContext.filesDir,
@@ -159,6 +173,7 @@ class PlantDetailFragment : Fragment() {
                 takePhoto.launch(photoUri)
             }
 
+            // Display a zoomed in version of the photo
             plantPhoto.setOnClickListener {
                 plant!!.photoFileName?.let { dialog ->
                     PlantImageDialogFragment.newInstance(
@@ -173,12 +188,15 @@ class PlantDetailFragment : Fragment() {
             )
             plantCamera.isEnabled = canResolveIntent(captureImageIntent)
 
+            // Only display the Delete button if the Plant was not just created
             if (args.justCreated) {
                 plantDelete.visibility = View.GONE
             }
             else {
+                // Delete the Plant
                 plantDelete.setOnClickListener {
                     viewLifecycleOwner.lifecycleScope.launch {
+                        // Remove from database
                         plant?.let { PlantRepository.get().removePlant(it) }
 
                         // Navigate back to list view, and prevent navigation back to this detail view
@@ -189,6 +207,7 @@ class PlantDetailFragment : Fragment() {
             }
         }
 
+        // Update the fragment details whenever the Plant changes in the database
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 plantDetailViewModel.plant.collect { plant ->
@@ -197,6 +216,7 @@ class PlantDetailFragment : Fragment() {
             }
         }
 
+        // Update Plant date whenever the DatePickerFragment provides a result
         setFragmentResultListener(
             DatePickerFragment.REQUEST_KEY_DATE
         ) { _, bundle ->
@@ -211,38 +231,51 @@ class PlantDetailFragment : Fragment() {
         _binding = null
     }
 
+    /**
+     * Updates the UI to match the information of the specified Plant
+     *
+     * @param plant The Plant information to be displayed
+     */
     private fun updateUi(plant: Plant) {
-        this.plant = plant
+        this.plant = plant // Store the Plant for easy access
 
         binding.apply {
+            // Update title
             if (plantTitle.text.toString() != plant.title) {
                 plantTitle.setText(plant.title)
             }
 
+            // Update place
             if (plantPlace.text.toString() != plant.place) {
                 plantPlace.setText(plant.place)
             }
 
+            // Format and update date
             val df = DateFormat.getDateInstance(DateFormat.LONG)
             plantDate.text = df.format(plant.date)
 
+            // Update date fragment event so it displays the Plants date upon being opened
             plantDate.setOnClickListener {
                 findNavController().navigate (
                     PlantDetailFragmentDirections.selectDate(plant.date)
                 )
             }
 
+            // Display the latitude and longitude if possible
             if (plant.longitude == null || plant.latitude == null) {
+                // Not possible so say so, and disable Google Maps button
                 plantLocation.text = getString(R.string.plant_null_coordinates)
                 googleMaps.isEnabled = false
                 googleMaps.isClickable = false
             }
             else {
+                // Is possible so display information and enable Google Maps button
                 plantLocation.text = getString(R.string.plant_coordinates, plant.latitude, plant.longitude)
                 googleMaps.isEnabled = true
                 googleMaps.isClickable = true
             }
 
+            // Update the share button event so it displays up to date information
             plantShare.setOnClickListener {
                 val reportIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
@@ -263,34 +296,51 @@ class PlantDetailFragment : Fragment() {
         }
     }
 
+    /**
+     * Creates a string report of a Plants information
+     *
+     * @param plant The Plant to get the report information from
+     * @return The plant report as a string
+     */
     private fun getPlantReport(plant: Plant): String {
+        // Title
         val titleString = if (plant.title.isNotEmpty()) {
             getString(R.string.plant_share_title, plant.title)
         } else {
             getString(R.string.plant_share_no_title)
         }
 
+        // Place
         val placeString = if (plant.place.isNotEmpty()) {
             getString(R.string.plant_share_place, plant.place)
         } else {
             getString(R.string.plant_share_no_place)
         }
 
+        // Date
         val df = DateFormat.getDateInstance(DateFormat.LONG)
         val dateString = getString(R.string.plant_share_date, df.format(plant.date))
 
+        // Longitude and Latitude
         val coordinatesString = if (plant.latitude != null && plant.longitude != null) {
             getString(R.string.plant_share_coordinates, plant.latitude, plant.longitude)
         } else {
             getString(R.string.plant_share_no_coordinates)
         }
 
+        // Put everything together
         return getString(
             R.string.plant_share_template,
             titleString, placeString, dateString, coordinatesString
         )
     }
 
+    /**
+     * Checks if an Intent can be resolved
+     *
+     * @param intent The Intent to check
+     * @return true if it can be resolved, false otherwise
+     */
     private fun canResolveIntent(intent: Intent): Boolean {
         val packageManager: PackageManager = requireActivity().packageManager
         val resolvedActivity: ResolveInfo? =
@@ -301,25 +351,34 @@ class PlantDetailFragment : Fragment() {
         return resolvedActivity != null
     }
 
+    /**
+     * Display the Plants photo
+     *
+     * @param photoFileName The file name of the photo to be displayed
+     */
     private fun updatePhoto(photoFileName: String?) {
         if (binding.plantPhoto.tag != photoFileName) {
+            // Get the photo
             val photoFile = photoFileName?.let {
                 File(requireContext().applicationContext.filesDir, it)
             }
+            // Only update if the photo exists
             if (photoFile?.exists() == true) {
                 binding.plantPhoto.doOnLayout { measuredView ->
+                    // Scale the photo
                     val scaledBitmap = getScaledBitmap(
                         photoFile.path,
                         measuredView.width,
                         measuredView.height
                     )
-                    binding.plantPhoto.setImageBitmap(scaledBitmap)
-                    binding.plantPhoto.tag = photoFileName
-                    binding.plantPhoto.contentDescription =
+                    binding.plantPhoto.setImageBitmap(scaledBitmap) // Display the photo
+                    binding.plantPhoto.tag = photoFileName // Tag it
+                    binding.plantPhoto.contentDescription = // Add description
                         getString(R.string.plant_photo_image_description)
 
                 }
             } else {
+                // Photo doesn't exist, so display nothing, and tag and describe accordingly
                 binding.plantPhoto.setImageBitmap(null)
                 binding.plantPhoto.tag = null
                 binding.plantPhoto.contentDescription =

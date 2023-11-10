@@ -11,10 +11,14 @@ import androidx.navigation.fragment.navArgs
 import java.util.Calendar
 import java.util.GregorianCalendar
 
+/**
+ * Fragment for allowing the user to choose a date
+ */
 class DatePickerFragment : DialogFragment() {
     private val args: DatePickerFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Returns the chosen date
         val dateListener = DatePickerDialog.OnDateSetListener {
                 _: DatePicker, year: Int, month: Int, day: Int ->
             val resultDate = GregorianCalendar(year, month, day).time
@@ -22,6 +26,7 @@ class DatePickerFragment : DialogFragment() {
                 bundleOf(BUNDLE_KEY_DATE to resultDate))
         }
 
+        // Sets today as the initial Date
         val calendar = Calendar.getInstance()
         calendar.time = args.plantDate
         val initialYear = calendar.get(Calendar.YEAR)
@@ -36,6 +41,7 @@ class DatePickerFragment : DialogFragment() {
         )
     }
 
+    // Make the date accessible by other classes
     companion object {
         const val REQUEST_KEY_DATE = "REQUEST_KEY_DATE"
         const val BUNDLE_KEY_DATE = "BUNDLE_KEY_DATE"
